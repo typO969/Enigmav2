@@ -1,109 +1,78 @@
-﻿Public Class Rotor
-	Public ReadOnly Mappings As Dictionary(Of Char, Char) = New Dictionary(Of Char, Char)
-	Public ReadOnly Notches() As Char
-	Private _Offset As Integer = 0
-	Public HasContactIssues As Boolean = False
+﻿''' <summary>
+''' Represents a single Enigma rotor with fixed wiring, notches, and position offset.
+''' </summary>
+Public Class Rotor
+	Public ReadOnly wiring As String ' e.g. "EKMFLGDQVZNTOWYHXUSPAIBRCJ"
+	Public ReadOnly notches() As Char
+	Public Property offset As Integer = 0
+	Public Property iD As String
+	Public hasContactIssues As Boolean = False
 
-	Public Property Offset() As Integer
-		Get
-			Return _Offset
-		End Get
-		Set(ByVal value As Integer)
-			_Offset = value
-		End Set
-	End Property
-
-	Public Sub New(ByRef Mappings As Dictionary(Of Char, Char), ByVal Notches() As Char)
-		'' Initialises a new rotor class instance using a dictionary containing
-		'' the starting character mappings to apply when encrypting.
-		Me.Mappings = Mappings
-		Me.Notches = Notches
+	''' <summary>
+	''' Initializes a new instance of the Rotor class with specified wiring, notches, and optional ID.
+	''' </summary>
+	''' <param name="wiring">A 26-character string representing the rotor wiring (A-Z order).</param>
+	''' <param name="notches">Characters indicating notch positions for turnover.</param>
+	''' <param name="id">Optional rotor identifier.</param>
+	Public Sub New(wiring As String, notches() As Char, Optional id As String = "")
+		Me.wiring = wiring
+		Me.notches = notches
+		Me.iD = id
 	End Sub
 
+	'' <summary>
+	''' Encrypts a character passing through the rotor from right to left, applying the current offset.
+	''' </summary>
+	''' <param name="char1">The character to encrypt.</param>
+	''' <returns>The encrypted character.</returns>
+	Public Function StandardEncrypt(ByVal char1 As Char) As Char
+		If hasContactIssues AndAlso (New Random()).Next(100) < 5 Then
+			' Simulate contact issue: return a random letter
+			Return ChrW(Asc("A") + (New Random()).Next(26))
+		End If
 
-	Public Sub Map(ByVal Char1 As Char, ByVal Char2 As Char)
-		'' Maps the encryption of Char1 to Char2.
-		Me.Mappings(Char1) = Char2
-	End Sub
+		If Not Char.IsLetter(char1) Then Return char1
 
+		Dim pos As Integer = (Asc(Char.ToUpper(char1)) - Asc("A") + offset) Mod 26
+		Return wiring(pos)
+	End Function
+
+	''' <summary>
+	''' Encrypts a character passing through the rotor from left to right (reverse path), applying the current offset.
+	''' </summary>
+	''' <param name="char1">The character to encrypt.</param>
+	''' <returns>The encrypted character.</returns>
+	Public Function ReflectEncrypt(ByVal char1 As Char) As Char
+		If Not Char.IsLetter(char1) Then Return char1
+
+		Dim idx As Integer = wiring.IndexOf(Char.ToUpper(char1))
+		If idx = -1 Then Throw New TranslationException("Could not map " & char1)
+		Dim pos As Integer = (idx - offset + 26) Mod 26
+		Return ChrW(Asc("A") + pos)
+	End Function
+
+
+	''' <summary>
+	''' Determines whether the specified character can be encrypted by the rotor.
+	''' </summary>
+	''' <param name="chr">The character to check.</param>
+	''' <returns>True if the character is a letter; otherwise, false.</returns>
+	Public Shared Function CanEncrypt(ByVal chr As Char) As Boolean
+		Return Char.IsLetter(chr)
+	End Function
+
+	''' <summary>
+	''' Advances the rotor's offset by one position, simulating a physical rotation.
+	''' </summary>
 	Public Sub Rotate()
-		'' Rotates the rotor once. Essentially shifts the mapping destinations
-		'' forward by one position.
-		'' The offset is increased by one unless the rotor has completed a full
-		'' rotation, in which case it is reset to 0.
-
-		Dim MappingSources(Mappings.Keys.Count - 1) As Char
-		Dim MappingDestinations(Mappings.Values.Count - 1) As Char
-
-		Mappings.Keys.CopyTo(MappingSources, 0)
-		Mappings.Values.CopyTo(MappingDestinations, 0)
-
-
-		Dim FirstDestination As Char = MappingDestinations(0)
-		' Use the destination of the mapping one step ahead.
-		For i As Integer = 0 To MappingDestinations.Count - 2
-			Me.Map(MappingSources(i), MappingDestinations(i + 1))
-		Next
-		Me.Map(MappingSources.Last(), FirstDestination)
-
-		Me.Offset = (Me.Offset + 1) Mod Me.Mappings.Count
-
+		offset = (offset + 1) Mod 26
 	End Sub
-
-	''' <summary>
-	''' Encrypts a character using this rotor's character mappings.
-	''' Non-letter characters are returned unchanged.
-	''' </summary>
-	''' <param name="Char1">The character to encrypt</param>
-	''' <returns>The encrypted character</returns>
-	''' During encryption, you could check:
-
-	Public Function StandardEncrypt(ByVal Char1 As Char) As Char
-		' Simulate intermittent contact issues (only if flag is set)
-		If HasContactIssues AndAlso New Random().Next(100) < 5 Then ' 5% chance of error
-			' Either return wrong character or original character
-			Dim availableChars As Char() = Me.Mappings.Keys.ToArray()
-			Return availableChars(New Random().Next(availableChars.Length))
-		End If
-
-		'' Encrypts the character using this rotor's character mappings.
-		If Not Char.IsLetter(Char1) Then
-			Return Char1
-		End If
-
-		If Me.Mappings.ContainsKey(Char1) Then
-			Return Me.Mappings(Char1)
-		End If
-
-		Throw New TranslationException("Could not map " & Char1 & " to any character.")
-	End Function
-
-
-	Public Function ReflectEncrypt(ByVal Char1 As Char) As Char
-		'' Encrypts the character by passing it through this rotor's character
-		'' mappings backwards.
-		If Not Char.IsLetter(Char1) Then
-			Return Char1
-		End If
-
-		For Each Pair As KeyValuePair(Of Char, Char) In Me.Mappings
-			If Pair.Value = Char1 Then
-				Return Pair.Key
-			End If
-		Next
-
-		Throw New TranslationException("Could not map " & Char1 & " to any character.")
-	End Function
-
-	''' <summary>
-	''' Determines whether the specified character can be encrypted.
-	''' </summary>
-	Public Shared Function CanEncrypt(ByVal c As Char) As Boolean
-		Return Char.IsLetter(c)
-	End Function
 
 End Class
 
+''' <summary>
+''' Exception thrown when a character cannot be mapped during translation.
+''' </summary>
 Class TranslationException
 	Inherits Exception
 

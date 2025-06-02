@@ -1,125 +1,148 @@
-﻿Public Class EnigmaMachine
-    Public Rotors() As Rotor
-    Public Reflector As Dictionary(Of Char, Char)
+﻿''' <summary>
+''' Simulates a complete Enigma machine with rotors and reflector.
+''' </summary>
+Public Class EnigmaMachine
+	Public Rotors() As Rotor
+	Public Reflector As String ' e.g. "YRUHQSLDPXNGOKMIEBFZCWVJAT"
 
-    Public Sub New(ByVal Rotors() As Rotor, ByVal Reflector As Dictionary(Of Char, Char))
-        '' Initialises a new Engigma Machine class instance.
-        '' Instance uses supplied array of Rotors and a dictionary containing
-        '' the mappings used for the reflector.
+	''' <summary>
+	''' Initializes a new instance of the EnigmaMachine class with specified rotors and reflector wiring.
+	''' </summary>
+	''' <param name="Rotors">Array of Rotor objects.</param>
+	''' <param name="Reflector">Reflector wiring as a 26-character string.</param>
+	Public Sub New(Rotors() As Rotor, Reflector As String)
+		' Initialises a new Engigma Machine class instance.
+		' Instance uses supplied array of Rotors and a dictionary containing the mappings used for the reflector.
 
-        Me.Rotors = Rotors
-        Me.Reflector = Reflector
-    End Sub
+		Me.Rotors = Rotors
+		Me.Reflector = Reflector
+	End Sub
 
+	''' <summary>
+	''' Rotates the rotors according to Enigma stepping rules, including double-stepping.
+	''' </summary>
 	Public Sub RotateRotors()
-		'' Rotates the rotors according to the original Enigma machine mechanics:
-		'' 1. Right rotor (last in array) always rotates with each keystroke
-		'' 2. Middle rotor rotates when right rotor hits its notch
-		'' 3. Left rotor rotates when middle rotor hits its notch
-		'' 4. "Double stepping anomaly": Middle rotor will step twice when it 
-		''    reaches its own notch (once due to normal stepping and once when it
-		''    causes the left rotor to step)
+		' Rotates the rotors according to the original Enigma machine mechanics:
+		' 1. Right rotor (last in array) always rotates with each keystroke
+		' 2. Middle rotor rotates when right rotor hits its notch
+		' 3. Left rotor rotates when middle rotor hits its notch
+		' 4. "Double stepping anomaly": Middle rotor will step twice when it 
+		'    reaches its own notch (once due to normal stepping and once when it causes the left rotor to step)
 
 		' Get the current position character for each rotor before rotation
 		Dim rightNotched As Boolean = False
 		Dim middleNotched As Boolean = False
 
 		' Check if rotors are at notch positions (before rotating)
-		If UBound(Me.Rotors) >= 2 Then ' We have at least 3 rotors
-			' Check if right rotor is at notch position
-			rightNotched = Me.Rotors(2).Notches.Contains(Me.Rotors(2).Mappings.Keys.ElementAt(Me.Rotors(2).Offset))
-
-			' Check if middle rotor is at notch position
-			middleNotched = Me.Rotors(1).Notches.Contains(Me.Rotors(1).Mappings.Keys.ElementAt(Me.Rotors(1).Offset))
+		If UBound(Rotors) = 3 Then ' We have at least 3 rotors
+			' The current top letter for each rotor is (A + offset)
+			rightNotched = Rotors(2).notches.Contains(ChrW(Asc("A") + Rotors(2).offset))
+			middleNotched = Rotors(1).notches.Contains(ChrW(Asc("A") + Rotors(1).offset))
 		End If
 
 		' Step according to Enigma rules:
-
 		' Step 1: If middle rotor is at notch, both middle and left rotors step
-		If middleNotched And UBound(Me.Rotors) >= 2 Then
-			Me.Rotors(0).Rotate() ' Left rotor steps
-			Me.Rotors(1).Rotate() ' Middle rotor steps
+		If middleNotched And UBound(Rotors) >= 2 Then
+			Rotors(0).Rotate() ' Left rotor steps
+			Rotors(1).Rotate() ' Middle rotor steps
 		End If
 
 		' Step 2: If right rotor is at notch, middle rotor steps
 		' (Note: middle rotor can step twice in one operation - the double stepping)
-		If rightNotched And UBound(Me.Rotors) >= 2 Then
-			Me.Rotors(1).Rotate() ' Middle rotor steps
+		If rightNotched And UBound(Rotors) >= 2 Then
+			Rotors(1).Rotate() ' Middle rotor steps
 		End If
 
 		' Step 3: Right rotor always steps
-		Me.Rotors(UBound(Me.Rotors)).Rotate() ' Right-most rotor always rotates
+		Rotors(UBound(Rotors)).Rotate() ' Right-most rotor always rotates
 	End Sub
 
+	''' <summary>
+	''' Encrypts a single character, passing it through all rotors, the reflector, and back.
+	''' </summary>
+	''' <param name="plainChar">The character to encrypt.</param>
+	''' <returns>The encrypted character.</returns>
+	Public Function EncryptChar(plainChar As Char) As Char
+		' Encrypts a character by encrypting it with the first rotor and then passing the result into the next rotor.
+		' Calls EnigmaMachine.RotateRotors() before fully encrypting a character
 
-	Public Function EncryptChar(ByVal PlainChar As Char) As Char
-		'' Encrypts a character by encrypting it with the first rotor and then
-		'' passing the result into the next rotor.
-		'' Calls EnigmaMachine.RotateRotors() before fully encrypting a character
-
-		Dim CipherChar As Char = PlainChar
+		Dim cipherChar As Char = plainChar
 
 		' First rotate the rotors so the next character uses a new alphabet.
-		Me.RotateRotors()
+		RotateRotors()
 
 		' Pass the character through the rotors from right to left.
-		For Each Rot As Rotor In Me.Rotors.Reverse()
-			CipherChar = Rot.StandardEncrypt(CipherChar)
+		For Each Rot As Rotor In Rotors.Reverse()
+			cipherChar = Rot.StandardEncrypt(cipherChar)
 		Next
 
-		' Reflect the character once through all the rotors.
-		If Char.IsLetter(CipherChar) Then
-			If Reflector.ContainsKey(CipherChar) Then
-				CipherChar = Reflector(CipherChar)
-			Else
-				Throw New TranslationException("Reflector could not map " & CipherChar)
+		' Reflect the character using the reflector wiring string
+		If Char.IsLetter(cipherChar) Then
+			Dim idx As Integer = Asc(Char.ToUpper(cipherChar)) - Asc("A")
+			If idx < 0 OrElse idx > 25 Then
+				Throw New TranslationException("Reflector could not map " & cipherChar)
 			End If
+			cipherChar = Reflector(idx)
 		End If
 
 		' Pass the character through the rotors from left to right.
-		For Each Rot As Rotor In Me.Rotors
-			CipherChar = Rot.ReflectEncrypt(CipherChar)
+		For Each Rot As Rotor In Rotors
+			cipherChar = Rot.ReflectEncrypt(cipherChar)
 		Next
 
-		Return CipherChar
+		' Introduce glitch only in REAL mode
+		If Not Module1.easyMode Then
+			Dim rand As New Random()
+			For Each Rot As Rotor In Rotors
+				If Rot.hasContactIssues AndAlso rand.Next(10000) < 1 Then ' ~0.01% chance
+					Dim shift = If(rand.Next(2) = 0, -1, 1)
+					cipherChar = ChrW(((Asc(cipherChar) - Asc("A") + shift + 26) Mod 26) + Asc("A"))
+					Exit For
+				End If
+			Next
+		End If
+
+		Return cipherChar
 	End Function
 
-
-	Public Function EncryptText(ByVal PlainText As String, Optional ByVal formatInGroups As Boolean = True) As String
-		If String.IsNullOrEmpty(PlainText) Then
+	''' <summary>
+	''' Encrypts a string of text, formatting output in groups if specified.
+	''' </summary>
+	''' <param name="plainText">The text to encrypt.</param>
+	''' <param name="formatInGroups">Whether to format output in 5-letter groups.</param>
+	''' <returns>The encrypted text.</returns>
+	Public Function EncryptText(plainText As String, Optional formatInGroups As Boolean = True) As String
+		If String.IsNullOrEmpty(plainText) Then
 			Return String.Empty
 		End If
 
 		' Convert to uppercase and remove all non-alphabetic characters
 		Dim filteredText As String = ""
-		For Each c As Char In PlainText.ToUpper()
+		For Each c As Char In plainText.ToUpper()
 			If c >= "A"c AndAlso c <= "Z"c Then
 				filteredText += c
 			End If
 		Next
 
 		' Encrypt the filtered text
-		Dim CipherText As String = ""
-		For Each PlainChar As Char In filteredText
-			CipherText += Me.EncryptChar(PlainChar)
+		Dim cipherText As String = ""
+		For Each plainChar As Char In filteredText
+			cipherText += EncryptChar(plainChar)
 		Next
 
 		' Format in groups of 5 letters if requested
 		If formatInGroups Then
 			Dim formattedText As String = ""
-			For i As Integer = 0 To CipherText.Length - 1
-				formattedText += CipherText(i)
-				If (i + 1) Mod 5 = 0 AndAlso i < CipherText.Length - 1 Then
+			For i As Integer = 0 To cipherText.Length - 1
+				formattedText += cipherText(i)
+				If (i + 1) Mod 5 = 0 AndAlso i < cipherText.Length - 1 Then
 					formattedText += " "
 				End If
 			Next
 			Return formattedText
 		Else
-			Return CipherText
+			Return cipherText
 		End If
 	End Function
-
-
-
 
 End Class
