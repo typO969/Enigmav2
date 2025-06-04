@@ -93,7 +93,7 @@ Module MachineBuilder
 			If Not IsNothing(RotorNode.Attributes.ItemOf("position")) Then
 				Dim notches() As Char = RotorNode.Attributes.ItemOf("notches").Value.ToCharArray()
 				Dim wiring As String = WiringFromXML(RotorNode)
-				Dim position As Integer = Val(RotorNode.Attributes.ItemOf("position").Value) - 1
+				Dim position As Integer = CInt(Val(RotorNode.Attributes.ItemOf("position").Value) - 1)
 				Dim positionAttr = RotorNode.Attributes.ItemOf("position")
 				Dim rotorID As String = If(positionAttr IsNot Nothing, "Rotor " & positionAttr.Value, "Unknown")
 				Rotors.Insert(position, New Rotor(wiring, notches, rotorID))

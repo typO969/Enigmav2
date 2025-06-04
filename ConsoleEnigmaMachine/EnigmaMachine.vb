@@ -26,8 +26,7 @@ Public Class EnigmaMachine
 		' 1. Right rotor (last in array) always rotates with each keystroke
 		' 2. Middle rotor rotates when right rotor hits its notch
 		' 3. Left rotor rotates when middle rotor hits its notch
-		' 4. "Double stepping anomaly": Middle rotor will step twice when it 
-		'    reaches its own notch (once due to normal stepping and once when it causes the left rotor to step)
+		' 4. "Double stepping anomaly": Middle rotor will step twice when it reaches its own notch (once due to normal stepping and once when it causes the left rotor to step)
 
 		' Get the current position character for each rotor before rotation
 		Dim rightNotched As Boolean = False
@@ -80,7 +79,7 @@ Public Class EnigmaMachine
 		If Char.IsLetter(cipherChar) Then
 			Dim idx As Integer = Asc(Char.ToUpper(cipherChar)) - Asc("A")
 			If idx < 0 OrElse idx > 25 Then
-				Throw New TranslationException("Reflector could not map " & cipherChar)
+				Throw New translationException("Reflector could not map " & cipherChar)
 			End If
 			cipherChar = Reflector(idx)
 		End If

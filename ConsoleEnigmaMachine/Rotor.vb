@@ -20,7 +20,7 @@ Public Class Rotor
 		Me.iD = id
 	End Sub
 
-	'' <summary>
+	''' <summary>
 	''' Encrypts a character passing through the rotor from right to left, applying the current offset.
 	''' </summary>
 	''' <param name="char1">The character to encrypt.</param>
@@ -46,7 +46,7 @@ Public Class Rotor
 		If Not Char.IsLetter(char1) Then Return char1
 
 		Dim idx As Integer = wiring.IndexOf(Char.ToUpper(char1))
-		If idx = -1 Then Throw New TranslationException("Could not map " & char1)
+		If idx = -1 Then Throw New translationException("Could not map " & char1)
 		Dim pos As Integer = (idx - offset + 26) Mod 26
 		Return ChrW(Asc("A") + pos)
 	End Function
@@ -73,7 +73,7 @@ End Class
 ''' <summary>
 ''' Exception thrown when a character cannot be mapped during translation.
 ''' </summary>
-Class TranslationException
+Class translationException
 	Inherits Exception
 
 	Public Sub New()
