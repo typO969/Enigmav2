@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<reflectors>
+	<reflector id="B" wiring="YRUHQSLDPXNGOKMIEBFZCWVJAT"/>
+	<reflector id="C" wiring="FVPJIAOYEDRZXWGCTKUQSBNMHL"/>
+	<reflector id="B-thin" wiring="ENKQAUYWJICOPBLMDXZVFTHRGS"/>
+	<reflector id="C-thin" wiring="RDOBJNTKVEHMLFCWZAXGYIPSUQ"/>
+</reflectors>

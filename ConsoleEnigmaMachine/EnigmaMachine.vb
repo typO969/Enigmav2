@@ -2,20 +2,20 @@
 ''' Simulates a complete Enigma machine with rotors and reflector.
 ''' </summary>
 Public Class EnigmaMachine
-	Public Rotors() As Rotor
-	Public Reflector As String ' e.g. "YRUHQSLDPXNGOKMIEBFZCWVJAT"
+	Public rotors() As Rotor
+	Public reflector As String ' e.g. "YRUHQSLDPXNGOKMIEBFZCWVJAT"
 
 	''' <summary>
 	''' Initializes a new instance of the EnigmaMachine class with specified rotors and reflector wiring.
 	''' </summary>
-	''' <param name="Rotors">Array of Rotor objects.</param>
-	''' <param name="Reflector">Reflector wiring as a 26-character string.</param>
-	Public Sub New(Rotors() As Rotor, Reflector As String)
+	''' <param name="rotors">Array of Rotor objects.</param>
+	''' <param name="reflector">Reflector wiring as a 26-character string.</param>
+	Public Sub New(rotors() As Rotor, reflector As String)
 		' Initialises a new Engigma Machine class instance.
 		' Instance uses supplied array of Rotors and a dictionary containing the mappings used for the reflector.
 
-		Me.Rotors = Rotors
-		Me.Reflector = Reflector
+		Me.rotors = rotors
+		Me.reflector = reflector
 	End Sub
 
 	''' <summary>

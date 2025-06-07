@@ -61,46 +61,48 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to &lt;rotormappings&gt;
-        '''&lt;rotor position=&quot;1&quot; notches=&quot;Q&quot;&gt;
-        '''&lt;mapping source=&quot;A&quot; destination=&quot;E&quot; /&gt;
-        '''&lt;mapping source=&quot;B&quot; destination=&quot;K&quot; /&gt;
-        '''&lt;mapping source=&quot;C&quot; destination=&quot;M&quot; /&gt;
-        '''&lt;mapping source=&quot;D&quot; destination=&quot;F&quot; /&gt;
-        '''&lt;mapping source=&quot;E&quot; destination=&quot;L&quot; /&gt;
-        '''&lt;mapping source=&quot;F&quot; destination=&quot;G&quot; /&gt;
-        '''&lt;mapping source=&quot;G&quot; destination=&quot;D&quot; /&gt;
-        '''&lt;mapping source=&quot;H&quot; destination=&quot;Q&quot; /&gt;
-        '''&lt;mapping source=&quot;I&quot; destination=&quot;V&quot; /&gt;
-        '''&lt;mapping source=&quot;J&quot; destination=&quot;Z&quot; /&gt;
-        '''&lt;mapping source=&quot;K&quot; destination=&quot;N&quot; /&gt;
-        '''&lt;mapping source=&quot;L&quot; d [rest of string was truncated]&quot;;.
+        '''  Looks up a localized string similar to &lt;plugboard&gt;
+        '''	&lt;mapping source=&quot;A&quot; destination=&quot;Z&quot; /&gt;
+        '''	&lt;mapping source=&quot;Z&quot; destination=&quot;A&quot; /&gt;
+        '''&lt;/plugboard&gt;.
         '''</summary>
-        Friend ReadOnly Property German123() As String
+        Friend ReadOnly Property plugboard() As String
             Get
-                Return ResourceManager.GetString("German123", resourceCulture)
+                Return ResourceManager.GetString("plugboard", resourceCulture)
             End Get
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to &lt;reflector&gt;
-        '''&lt;mapping source=&quot;A&quot; destination=&quot;Y&quot; /&gt;
-        '''&lt;mapping source=&quot;B&quot; destination=&quot;R&quot; /&gt;
-        '''&lt;mapping source=&quot;C&quot; destination=&quot;U&quot; /&gt;
-        '''&lt;mapping source=&quot;D&quot; destination=&quot;H&quot; /&gt;
-        '''&lt;mapping source=&quot;E&quot; destination=&quot;Q&quot; /&gt;
-        '''&lt;mapping source=&quot;F&quot; destination=&quot;S&quot; /&gt;
-        '''&lt;mapping source=&quot;G&quot; destination=&quot;L&quot; /&gt;
-        '''&lt;mapping source=&quot;H&quot; destination=&quot;D&quot; /&gt;
-        '''&lt;mapping source=&quot;I&quot; destination=&quot;P&quot; /&gt;
-        '''&lt;mapping source=&quot;J&quot; destination=&quot;X&quot; /&gt;
-        '''&lt;mapping source=&quot;K&quot; destination=&quot;N&quot; /&gt;
-        '''&lt;mapping source=&quot;L&quot; destination=&quot;G&quot; /&gt;
-        '''&lt;mapping source=&quot;M&quot; [rest of string was truncated]&quot;;.
+        '''  Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+        '''&lt;reflectors&gt;
+        '''	&lt;reflector id=&quot;B&quot; wiring=&quot;YRUHQSLDPXNGOKMIEBFZCWVJAT&quot;/&gt;
+        '''	&lt;reflector id=&quot;C&quot; wiring=&quot;FVPJIAOYEDRZXWGCTKUQSBNMHL&quot;/&gt;
+        '''	&lt;reflector id=&quot;B-thin&quot; wiring=&quot;ENKQAUYWJICOPBLMDXZVFTHRGS&quot;/&gt;
+        '''	&lt;reflector id=&quot;C-thin&quot; wiring=&quot;RDOBJNTKVEHMLFCWZAXGYIPSUQ&quot;/&gt;
+        '''&lt;/reflectors&gt;.
         '''</summary>
-        Friend ReadOnly Property ReflectorB() As String
+        Friend ReadOnly Property reflectors() As String
             Get
-                Return ResourceManager.GetString("ReflectorB", resourceCulture)
+                Return ResourceManager.GetString("reflectors", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+        '''&lt;rotors&gt;
+        '''	&lt;!-- Wehrmacht / Luftwaffe rotors --&gt;
+        '''	&lt;rotor id=&quot;I&quot; notch=&quot;Q&quot; wiring=&quot;EKMFLGDQVZNTOWYHXUSPAIBRCJ&quot;/&gt;
+        '''	&lt;rotor id=&quot;II&quot; notch=&quot;E&quot; wiring=&quot;AJDKSIRUXBLHWTMCQGZNPYFVOE&quot;/&gt;
+        '''	&lt;rotor id=&quot;III&quot; notch=&quot;V&quot; wiring=&quot;BDFHJLCPRTXVZNYEIWGAKMUSQO&quot;/&gt;
+        '''	&lt;rotor id=&quot;IV&quot; notch=&quot;J&quot; wiring=&quot;ESOVPZJAYQUIRHXLNFTGKDCMWB&quot;/&gt;
+        '''	&lt;rotor id=&quot;V&quot; notch=&quot;Z&quot; wiring=&quot;VZBRGITYUPSDNHLXAWMJQOFECK&quot;/&gt;
+        '''	
+        '''	&lt;!-- Kriegsmarine extra rotors --&gt;
+        '''	&lt;rotor id=&quot;VI&quot; notch=&quot;ZM&quot; wiring=&quot;JPGVOUMFYQBENHZRDKASXLI [rest of string was truncated]&quot;;.
+        '''</summary>
+        Friend ReadOnly Property rotors() As String
+            Get
+                Return ResourceManager.GetString("rotors", resourceCulture)
             End Get
         End Property
     End Module

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rotors>
+	<!-- Wehrmacht / Luftwaffe rotors -->
+	<rotor id="I" notch="Q" wiring="EKMFLGDQVZNTOWYHXUSPAIBRCJ" ring="1"/>
+	<rotor id="II" notch="E" wiring="AJDKSIRUXBLHWTMCQGZNPYFVOE" ring="0"/>
+	<rotor id="III" notch="V" wiring="BDFHJLCPRTXVZNYEIWGAKMUSQO" ring="0"/>
+	<rotor id="IV" notch="J" wiring="ESOVPZJAYQUIRHXLNFTGKDCMWB" ring="0"/>
+	<rotor id="V" notch="Z" wiring="VZBRGITYUPSDNHLXAWMJQOFECK" ring="0"/>
+	
+	<!-- Kriegsmarine extra rotors -->
+	<rotor id="VI" notch="ZM" wiring="JPGVOUMFYQBENHZRDKASXLICTW" ring="0"/>
+	<rotor id="VII" notch="ZM" wiring="NZJHGRCXMYSWBOUFAIVLPEKQDT" ring="0"/>
+	<rotor id="VIII" notch="ZM" wiring="FKQHTLXOCBJSPDZRAMEWNIUYGV" ring="0"/>
+	
+	<!-- Greek-letter “Umkehrwalze” rotors for M4 (no turnover) -->
+	<rotor id="β" notch="" wiring="LEYJVCNIXWPBQMDRTAKZGFUHOS" ring="0"/>
+	<rotor id="γ" notch="" wiring="FSOKANUERHMBTIYCWLQPZXVGJD" ring="0"/>
+</rotors>

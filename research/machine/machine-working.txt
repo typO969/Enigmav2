@@ -1,0 +1,36 @@
+key: 	ENGLISH	{GERMAN}
+
+
+GERMAN ENIGMA I MACHINE 
+MODEL: Wehrmacht (Heer & Luftwaffe) 
+UKW: B 
+ROTORS: 3 
+TOTAL ROTORS: 5 normal
+
+
+ROTORS	{WALZEN}
+
+0. [far left] REFLECTOR    1. [left] SLOW (676)	 2. [mid] MEDIUM (26)	 3. [right] FAST (1)
+
+RING SETTING(offset)	{RINGSTELLUNG}	per ROTOR		
+
+REFLECTOR		{UMKEHRWALZE or UKW}
+
+
+the PLUGS {STECKER} on the PLUGBOARD {STECKERBRETT}
+
+ROTOR START POSITION {SPRUCHSCHLUSSEL}
+
+
+
+
+FORMATTING RULES:
+The Wehrmacht used the following abbreviations:
+KLAM = Parenthesis
+ZZ = Comma
+X = Full stop (end of sentence)
+YY = Point or dot
+X****X = Inverted commas
+Question mark (Fragezeichen in German) was usually abbreviated to FRAGE, FRAGEZ or FRAQ.
+Foreign names, places, etc. are delimited twice by "X" as in XPARISXPARISX or XFEUERSTEINX
+The letters CH were written as Q. ACHT became AQT, RICHTUNG became RIQTUNG

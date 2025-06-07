@@ -5,26 +5,73 @@
 ''' </summary>
 Public Module Module1
 	' Manual testing interface.
-	Dim rotorsXML As String = My.Resources.German123
-	Dim reflectorsXML As String = My.Resources.ReflectorB
 	Dim formatInGroups As Boolean = True  ' Default to historical formatting
 	Public easyMode As Boolean = True
 	Dim initialRotorPositions() As Integer
+	Dim selectedRotors As List(Of Rotor)
+	Dim reflectorWiring As String
+	' Instead of loading from file:
+	' Dim rotorPath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "My Project\rotors.xml")
+	' Dim rotors As Rotor() = RotorsFromXMLFilePath(rotorPath)
 
+	' Load from resources:
+	Dim rotors As Rotor() = RotorsFromXMLData(My.Resources.rotors)
 
 	''' <summary>
 	''' Main entry point for the Enigma console application.
 	''' </summary>
 	Sub Main()
-		Dim rotors() As Rotor
-		Dim reflector As String
 		Dim machine As EnigmaMachine
 		Dim firstInput As Boolean = True
 
-		rotors = MachineBuilder.RotorsFromXMLData(rotorsXML).Take(3).ToArray()
-		reflector = MachineBuilder.ReflectorFromXMLData(reflectorsXML)
+		' Load all available rotors from XML
+		Dim allRotors = rotors
+		' Filter to only I-V
+		Dim allowedIDs = New String() {"I", "II", "III", "IV", "V"}
+		Dim availableRotors = allRotors.Where(Function(r) allowedIDs.Contains(r.iD)).ToList()
 
-		machine = New EnigmaMachine(rotors, reflector)
+		' Prompt user for rotor selection and order
+		selectedRotors = New List(Of Rotor)
+		Dim usedIDs As New List(Of String)
+		Dim positions = New String() {"left (slow)", "middle (medium)", "right (fast)"}
+
+		'master rotor loader
+		For i = 0 To 2
+			Dim rotorID As String = ""
+			Do
+				Console.WriteLine($"Select rotor for {positions(i)} position (I, II, III, IV, V):")
+				rotorID = Console.ReadLine().Trim().ToUpper()
+			Loop Until allowedIDs.Contains(rotorID) AndAlso Not usedIDs.Contains(rotorID)
+			selectedRotors.Add(availableRotors.First(Function(r) r.iD = rotorID))
+			usedIDs.Add(rotorID)
+
+			' Prompt for ring setting immediately after rotor selection
+			Console.WriteLine($"Enter ring setting (1-26, where 1=A) for {rotorID}:")
+			Dim ringInput As String = Console.ReadLine().Trim()
+			Dim ringSetting As Integer = 1
+			If Integer.TryParse(ringInput, ringSetting) AndAlso ringSetting >= 1 AndAlso ringSetting <= 26 Then
+				selectedRotors(i).ringSetting = ringSetting - 1 ' 0-based
+			Else
+				selectedRotors(i).ringSetting = 0
+			End If
+		Next
+
+		' Load reflector B
+		' Instead of:
+		' reflectorWiring = MachineBuilder.ReflectorFromXMLFilePath("My Project\reflectors.xml")
+		' Use:
+		reflectorWiring = MachineBuilder.ReflectorFromXMLData(My.Resources.reflectors)
+
+
+		' Show summary
+		Console.WriteLine("Selected rotors (left to right): " & String.Join(", ", selectedRotors.Select(Function(r) r.iD)))
+		Console.WriteLine("Reflector: B")
+
+		' Now you can pass selectedRotors and reflectorWiring to your EnigmaMachine constructor
+		' Example:
+		' Dim machine As New EnigmaMachine(selectedRotors.ToArray(), reflectorWiring)
+
+		machine = New EnigmaMachine(selectedRotors.ToArray(), reflectorWiring)
 		PreRotateRotors(machine)
 
 		While CBool(1)
@@ -46,12 +93,9 @@ Public Module Module1
 				HandleEncryptCommand(machine, plainText)
 
 				If easyMode Then
-					rotors = MachineBuilder.RotorsFromXMLData(rotorsXML).Take(3).ToArray
-					reflector = MachineBuilder.ReflectorFromXMLData(reflectorsXML)
-					machine = New EnigmaMachine(rotors, reflector)
-					' Auto-fill rotor positions from initialRotorPositions
+					machine = New EnigmaMachine(selectedRotors.ToArray(), reflectorWiring)
 					If initialRotorPositions IsNot Nothing Then
-						For i = 0 To Math.Min(2, rotors.Length - 1)
+						For i = 0 To Math.Min(2, selectedRotors.Count - 1)
 							machine.Rotors(i).offset = initialRotorPositions(i)
 						Next
 						Console.WriteLine("Easy mode: Rotors auto-reset to initial positions: " &
@@ -59,7 +103,7 @@ Public Module Module1
 						PrintModeBanner()
 					Else
 						Console.WriteLine(String.Format(Strings.strSavedPosErr))
-						PreRotateRotors(machine) ' fallback if not set
+						PreRotateRotors(machine)
 					End If
 				End If
 				Continue While
@@ -74,9 +118,7 @@ Public Module Module1
 
 			ElseIf plainText = "--R" Then
 				Console.WriteLine(String.Format(Strings.strReset))
-				rotors = MachineBuilder.RotorsFromXMLData(rotorsXML).Take(3).ToArray
-				reflector = MachineBuilder.ReflectorFromXMLData(reflectorsXML)
-				machine = New EnigmaMachine(rotors, reflector)
+				machine = New EnigmaMachine(selectedRotors.ToArray(), reflectorWiring)
 				PreRotateRotors(machine)
 				Continue While
 
@@ -175,7 +217,8 @@ Public Module Module1
 		Next
 
 		'store initial rotor positions for easy mode reset
-		initialRotorPositions = CType(rotorPositions.Clone(), Integer())
+		initialRotorPositions = DirectCast(rotorPositions.Clone(), Integer())
+
 
 		Console.WriteLine()
 		PrintModeBanner()
@@ -261,12 +304,9 @@ Public Module Module1
 		Next
 
 		If easyMode Then
-			Dim rotors = MachineBuilder.RotorsFromXMLData(rotorsXML).Take(3).ToArray()
-			Dim reflector = MachineBuilder.ReflectorFromXMLData(reflectorsXML)
-			machine = New EnigmaMachine(rotors, reflector)
-			' Set rotors to initial positions
+			machine = New EnigmaMachine(selectedRotors.ToArray(), reflectorWiring)
 			If initialRotorPositions IsNot Nothing Then
-				For i = 0 To Math.Min(2, rotors.Length - 1)
+				For i = 0 To Math.Min(2, selectedRotors.Count - 1)
 					machine.Rotors(i).offset = initialRotorPositions(i)
 				Next
 			End If

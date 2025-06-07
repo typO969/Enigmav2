@@ -3,9 +3,10 @@
 ''' </summary>
 Public Class Rotor
 	Public ReadOnly wiring As String ' e.g. "EKMFLGDQVZNTOWYHXUSPAIBRCJ"
-	Public ReadOnly notches() As Char
+	Public ReadOnly notches As Char()
 	Public Property offset As Integer = 0
 	Public Property iD As String
+	Public Property ringSetting As Integer ' 0-25, where 0 = 'A'
 	Public hasContactIssues As Boolean = False
 
 	''' <summary>
@@ -14,11 +15,19 @@ Public Class Rotor
 	''' <param name="wiring">A 26-character string representing the rotor wiring (A-Z order).</param>
 	''' <param name="notches">Characters indicating notch positions for turnover.</param>
 	''' <param name="id">Optional rotor identifier.</param>
-	Public Sub New(wiring As String, notches() As Char, Optional id As String = "")
+	Public Sub New(wiring As String, notches() As Char, Optional iD As String = "", Optional ringSetting As Integer = 0)
 		Me.wiring = wiring
 		Me.notches = notches
-		Me.iD = id
+		Me.iD = iD
+		offset = 0
+		Me.ringSetting = ringSetting
 	End Sub
+
+	' Adjust your stepping and mapping logic to account for ringSetting
+	' For example, when mapping input to wiring, use:
+	' (input + offset - ringSetting + 26) Mod 26
+
+
 
 	''' <summary>
 	''' Encrypts a character passing through the rotor from right to left, applying the current offset.
