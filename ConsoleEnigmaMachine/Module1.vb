@@ -22,7 +22,6 @@ Public Module Module1
 	''' </summary>
 	Sub Main()
 		Dim machine As EnigmaMachine
-		Dim firstInput As Boolean = True
 
 		' Load all available rotors from XML
 		Dim allRotors = rotors
@@ -74,7 +73,7 @@ Public Module Module1
 		machine = New EnigmaMachine(selectedRotors.ToArray(), reflectorWiring)
 		PreRotateRotors(machine)
 
-		While CBool(1)
+		While True
 			' Display prompt (only for subsequent entries after first prompt) 
 			'firstInput = False
 
@@ -288,12 +287,6 @@ Public Module Module1
 			Console.WriteLine(String.Format(Strings.strDecryptSyntax))
 			Return
 		End If
-		' Clean input: remove all non-letters
-		Dim cleaned = New String(parts(0).Where(Function(c) Char.IsLetter(c)).ToArray())
-		Dim cipherText = cleaned.ToUpper()
-		Dim output = machine.EncryptText(cipherText)
-		Dim outputNoSpaces = output.Replace(" ", "")
-
 		For i = 0 To machine.Rotors.Length - 1
 			Dim val As Integer
 			If Not Integer.TryParse(parts(i + 1), val) OrElse val < 0 OrElse val > 25 Then
@@ -302,6 +295,12 @@ Public Module Module1
 			End If
 			machine.Rotors(i).offset = val
 		Next
+
+		' Clean input: remove all non-letters
+		Dim cleaned = New String(parts(0).Where(Function(c) Char.IsLetter(c)).ToArray())
+		Dim cipherText = cleaned.ToUpper()
+		Dim output = machine.EncryptText(cipherText)
+		Dim outputNoSpaces = output.Replace(" ", "")
 
 		If easyMode Then
 			machine = New EnigmaMachine(selectedRotors.ToArray(), reflectorWiring)
