@@ -253,7 +253,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Previous rotor settings were not saved, must reset manuallly..
+        '''  Looks up a localized string similar to Previous rotor settings were not saved, must reset manually..
         '''</summary>
         Public Shared ReadOnly Property strSavedPosErr() As String
             Get
