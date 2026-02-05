@@ -32,28 +32,37 @@ Public Class EnigmaMachine
 		Dim rightNotched As Boolean = False
 		Dim middleNotched As Boolean = False
 
-		' Check if rotors are at notch positions (before rotating)
-		If UBound(Rotors) = 3 Then ' We have at least 3 rotors
-			' The current top letter for each rotor is (A + offset)
-			rightNotched = Rotors(2).notches.Contains(ChrW(Asc("A") + Rotors(2).offset))
-			middleNotched = Rotors(1).notches.Contains(ChrW(Asc("A") + Rotors(1).offset))
-		End If
+                ' Check if rotors are at notch positions (before rotating)
+                Dim rotorCount As Integer = Rotors.Length
 
-		' Step according to Enigma rules:
-		' Step 1: If middle rotor is at notch, both middle and left rotors step
-		If middleNotched And UBound(Rotors) >= 2 Then
-			Rotors(0).Rotate() ' Left rotor steps
-			Rotors(1).Rotate() ' Middle rotor steps
-		End If
+                If rotorCount >= 2 Then
+                        rightNotched = Rotors(rotorCount - 1).notches.Contains(ChrW(Asc("A") + Rotors(rotorCount - 1).offset))
+                End If
 
-		' Step 2: If right rotor is at notch, middle rotor steps
-		' (Note: middle rotor can step twice in one operation - the double stepping)
-		If rightNotched And UBound(Rotors) >= 2 Then
-			Rotors(1).Rotate() ' Middle rotor steps
-		End If
+                If rotorCount >= 3 Then
+                        middleNotched = Rotors(rotorCount - 2).notches.Contains(ChrW(Asc("A") + Rotors(rotorCount - 2).offset))
+                End If
 
-		' Step 3: Right rotor always steps
-		Rotors(UBound(Rotors)).Rotate() ' Right-most rotor always rotates
+                ' Step according to Enigma rules:
+                ' Determine rotor indices relative to the right-most rotor
+                Dim rightIndex As Integer = rotorCount - 1
+                Dim middleIndex As Integer = rotorCount - 2
+                Dim leftIndex As Integer = rotorCount - 3
+
+                ' Step 1: If middle rotor is at notch, both middle and left rotors step
+                If middleNotched And rotorCount >= 3 Then
+                        Rotors(leftIndex).Rotate() ' Left rotor steps
+                        Rotors(middleIndex).Rotate() ' Middle rotor steps
+                End If
+
+                ' Step 2: If right rotor is at notch, middle rotor steps
+                ' (Note: middle rotor can step twice in one operation - the double stepping)
+                If rightNotched And rotorCount >= 2 Then
+                        Rotors(middleIndex).Rotate() ' Middle rotor steps
+                End If
+
+                ' Step 3: Right rotor always steps
+                Rotors(rightIndex).Rotate() ' Right-most rotor always rotates
 	End Sub
 
 	''' <summary>
