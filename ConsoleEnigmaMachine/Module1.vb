@@ -22,7 +22,6 @@ Public Module Module1
 	''' </summary>
 	Sub Main()
 		Dim machine As EnigmaMachine
-		Dim firstInput As Boolean = True
 
 		' Load all available rotors from XML
 		Dim allRotors = rotors
@@ -74,7 +73,7 @@ Public Module Module1
 		machine = New EnigmaMachine(selectedRotors.ToArray(), reflectorWiring)
 		PreRotateRotors(machine)
 
-		While CBool(1)
+		While True
 			' Display prompt (only for subsequent entries after first prompt) 
 			'firstInput = False
 

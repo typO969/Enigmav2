@@ -4,6 +4,7 @@
 Public Class EnigmaMachine
 	Public rotors() As Rotor
 	Public reflector As String ' e.g. "YRUHQSLDPXNGOKMIEBFZCWVJAT"
+	Private Shared ReadOnly glitchRandom As New Random()
 
 	''' <summary>
 	''' Initializes a new instance of the EnigmaMachine class with specified rotors and reflector wiring.
@@ -33,7 +34,7 @@ Public Class EnigmaMachine
 		Dim middleNotched As Boolean = False
 
 		' Check if rotors are at notch positions (before rotating)
-		If UBound(Rotors) = 3 Then ' We have at least 3 rotors
+		If Rotors.Length >= 3 Then ' We have at least 3 rotors
 			' The current top letter for each rotor is (A + offset)
 			rightNotched = Rotors(2).notches.Contains(ChrW(Asc("A") + Rotors(2).offset))
 			middleNotched = Rotors(1).notches.Contains(ChrW(Asc("A") + Rotors(1).offset))
@@ -41,14 +42,14 @@ Public Class EnigmaMachine
 
 		' Step according to Enigma rules:
 		' Step 1: If middle rotor is at notch, both middle and left rotors step
-		If middleNotched And UBound(Rotors) >= 2 Then
+		If middleNotched AndAlso Rotors.Length >= 3 Then
 			Rotors(0).Rotate() ' Left rotor steps
 			Rotors(1).Rotate() ' Middle rotor steps
 		End If
 
 		' Step 2: If right rotor is at notch, middle rotor steps
 		' (Note: middle rotor can step twice in one operation - the double stepping)
-		If rightNotched And UBound(Rotors) >= 2 Then
+		If rightNotched AndAlso Rotors.Length >= 3 Then
 			Rotors(1).Rotate() ' Middle rotor steps
 		End If
 
@@ -91,10 +92,9 @@ Public Class EnigmaMachine
 
 		' Introduce glitch only in REAL mode
 		If Not Module1.easyMode Then
-			Dim rand As New Random()
 			For Each Rot As Rotor In Rotors
-				If Rot.hasContactIssues AndAlso rand.Next(10000) < 1 Then ' ~0.01% chance
-					Dim shift = If(rand.Next(2) = 0, -1, 1)
+				If Rot.hasContactIssues AndAlso glitchRandom.Next(10000) < 1 Then ' ~0.01% chance
+					Dim shift = If(glitchRandom.Next(2) = 0, -1, 1)
 					cipherChar = ChrW(((Asc(cipherChar) - Asc("A") + shift + 26) Mod 26) + Asc("A"))
 					Exit For
 				End If
@@ -116,31 +116,35 @@ Public Class EnigmaMachine
 		End If
 
 		' Convert to uppercase and remove all non-alphabetic characters
-		Dim filteredText As String = ""
+		Dim filteredText As New System.Text.StringBuilder(plainText.Length)
 		For Each c As Char In plainText.ToUpper()
 			If c >= "A"c AndAlso c <= "Z"c Then
-				filteredText += c
+				filteredText.Append(c)
 			End If
 		Next
 
+		If filteredText.Length = 0 Then
+			Return String.Empty
+		End If
+
 		' Encrypt the filtered text
-		Dim cipherText As String = ""
-		For Each plainChar As Char In filteredText
-			cipherText += EncryptChar(plainChar)
+		Dim cipherText As New System.Text.StringBuilder(filteredText.Length)
+		For Each plainChar As Char In filteredText.ToString()
+			cipherText.Append(EncryptChar(plainChar))
 		Next
 
 		' Format in groups of 5 letters if requested
 		If formatInGroups Then
-			Dim formattedText As String = ""
+			Dim formattedText As New System.Text.StringBuilder(cipherText.Length + (cipherText.Length \ 5))
 			For i As Integer = 0 To cipherText.Length - 1
-				formattedText += cipherText(i)
+				formattedText.Append(cipherText(i))
 				If (i + 1) Mod 5 = 0 AndAlso i < cipherText.Length - 1 Then
-					formattedText += " "
+					formattedText.Append(" "c)
 				End If
 			Next
 			Return formattedText
 		Else
-			Return cipherText
+			Return cipherText.ToString()
 		End If
 	End Function
 

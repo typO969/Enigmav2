@@ -2,6 +2,7 @@
 ''' Represents a single Enigma rotor with fixed wiring, notches, and position offset.
 ''' </summary>
 Public Class Rotor
+	Private Shared ReadOnly issueRandom As New Random()
 	Public ReadOnly wiring As String ' e.g. "EKMFLGDQVZNTOWYHXUSPAIBRCJ"
 	Public ReadOnly notches As Char()
 	Public Property offset As Integer = 0
@@ -35,9 +36,9 @@ Public Class Rotor
 	''' <param name="char1">The character to encrypt.</param>
 	''' <returns>The encrypted character.</returns>
 	Public Function StandardEncrypt(ByVal char1 As Char) As Char
-		If hasContactIssues AndAlso (New Random()).Next(100) < 5 Then
+		If hasContactIssues AndAlso issueRandom.Next(100) < 5 Then
 			' Simulate contact issue: return a random letter
-			Return ChrW(Asc("A") + (New Random()).Next(26))
+			Return ChrW(Asc("A") + issueRandom.Next(26))
 		End If
 
 		If Not Char.IsLetter(char1) Then Return char1
