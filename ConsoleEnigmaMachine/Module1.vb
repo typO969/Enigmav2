@@ -287,13 +287,19 @@ Public Module Module1
 			Console.WriteLine(String.Format(Strings.strDecryptSyntax))
 			Return
 		End If
+
+		Dim rotorOffsets(machine.Rotors.Length - 1) As Integer
 		For i = 0 To machine.Rotors.Length - 1
 			Dim val As Integer
 			If Not Integer.TryParse(parts(i + 1), val) OrElse val < 0 OrElse val > 25 Then
 				Console.WriteLine("Invalid rotor position: " & parts(i + 1))
 				Return
 			End If
-			machine.Rotors(i).offset = val
+			rotorOffsets(i) = val
+		Next
+
+		For i = 0 To machine.Rotors.Length - 1
+			machine.Rotors(i).offset = rotorOffsets(i)
 		Next
 
 		' Clean input: remove all non-letters

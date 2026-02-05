@@ -201,7 +201,7 @@ These values represent the initial position of each rotor.
     <value>Resetting machine rotors...</value>
   </data>
   <data name="strSavedPosErr" xml:space="preserve">
-    <value>Previous rotor settings were not saved, must reset manuallly.</value>
+    <value>Previous rotor settings were not saved, must reset manually.</value>
   </data>
   <data name="strSettingsNA" xml:space="preserve">
     <value>Ring Settings: (not exposed)
