@@ -51,7 +51,7 @@ Module MachineBuilder
 	''' <summary>
 	''' Loads reflector wiring for the specified reflector ID from an XML file path.
 	''' </summary>
-	''' <param name="XMLDoc">The file path to the reflector XML.</param>
+	''' <param name="XMLDoc">The reflector XML document.</param>
 	''' <param name="reflectorID">The reflector ID to load (default "B").</param>
 	''' <returns>Reflector wiring as a 26-character string.</returns>
 	Public Function ReflectorFromXMLDocument(ByRef XMLDoc As XmlDocument, Optional ByVal reflectorID As String = "B") As String
